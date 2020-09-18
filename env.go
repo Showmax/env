@@ -295,8 +295,16 @@ func textUnmarshaler(rv reflect.Value) encoding.TextUnmarshaler {
 func defaultParsers() map[reflect.Type]parseFunc {
 	return map[reflect.Type]parseFunc{
 		reflect.TypeOf(bool(false)):      parseBool,
+		reflect.TypeOf(float32(0)):       parseFloat32,
 		reflect.TypeOf(float64(0)):       parseFloat64,
 		reflect.TypeOf(int(0)):           parseInt,
+		reflect.TypeOf(uint(0)):          parseUint,
+		reflect.TypeOf(int8(0)):          parseInt8,
+		reflect.TypeOf(uint8(0)):         parseUint8,
+		reflect.TypeOf(int16(0)):         parseInt16,
+		reflect.TypeOf(uint16(0)):        parseUint16,
+		reflect.TypeOf(int32(0)):         parseInt32,
+		reflect.TypeOf(uint32(0)):        parseUint32,
 		reflect.TypeOf(int64(0)):         parseInt64,
 		reflect.TypeOf(uint64(0)):        parseUint64,
 		reflect.TypeOf(string("")):       parseString,
@@ -311,8 +319,76 @@ func parseBool(s string) (interface{}, error) {
 	return strconv.ParseBool(s)
 }
 
+func parseFloat32(s string) (interface{}, error) {
+	val, err := strconv.ParseFloat(s, 32)
+	if err != nil {
+		return nil, err
+	}
+	return float32(val), err
+}
+
+func parseFloat64(s string) (interface{}, error) {
+	return strconv.ParseFloat(s, 64)
+}
+
 func parseInt(s string) (interface{}, error) {
 	return strconv.Atoi(s)
+}
+
+func parseUint(s string) (interface{}, error) {
+	val, err := strconv.ParseUint(s, 10, strconv.IntSize)
+	if err != nil {
+		return nil, err
+	}
+	return uint(val), err
+}
+
+func parseInt8(s string) (interface{}, error) {
+	val, err := strconv.ParseInt(s, 10, 8)
+	if err != nil {
+		return nil, err
+	}
+	return int8(val), err
+}
+
+func parseUint8(s string) (interface{}, error) {
+	val, err := strconv.ParseUint(s, 10, 8)
+	if err != nil {
+		return nil, err
+	}
+	return uint8(val), err
+}
+
+func parseInt16(s string) (interface{}, error) {
+	val, err := strconv.ParseInt(s, 10, 16)
+	if err != nil {
+		return nil, err
+	}
+	return int16(val), err
+}
+
+func parseUint16(s string) (interface{}, error) {
+	val, err := strconv.ParseUint(s, 10, 16)
+	if err != nil {
+		return nil, err
+	}
+	return uint16(val), err
+}
+
+func parseInt32(s string) (interface{}, error) {
+	val, err := strconv.ParseInt(s, 10, 32)
+	if err != nil {
+		return nil, err
+	}
+	return int32(val), err
+}
+
+func parseUint32(s string) (interface{}, error) {
+	val, err := strconv.ParseUint(s, 10, 32)
+	if err != nil {
+		return nil, err
+	}
+	return uint32(val), err
 }
 
 func parseInt64(s string) (interface{}, error) {
@@ -325,10 +401,6 @@ func parseUint64(s string) (interface{}, error) {
 
 func parseString(s string) (interface{}, error) {
 	return s, nil
-}
-
-func parseFloat64(s string) (interface{}, error) {
-	return strconv.ParseFloat(s, 64)
 }
 
 func parseRegex(s string) (interface{}, error) {
