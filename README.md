@@ -5,7 +5,21 @@ packages met our needs. The closest one was
 [envconfig](https://github.com/kelseyhightower/envconfig) but it has several
 drawbacks, for example:
 
-TODO
+* The environment variables are optional by default. This is not aligned
+  with our requirements as we believe that optional variables in deployment
+  and environment configuration are bug prone practice. Writing
+  `envconfig:required` annotation to every field is very annoying and
+  pollutes the code.
+
+* Variable name lookup policy is too complicated and therefore again bug prone.
+  If there is variable named `VAR` loaded with prefix `PREFIX` and variable
+  `PREFIX_VAR` does not exist in the environment, `envconfig` tries to read
+  from variable `VAR` (without the prefix). If such variable exists in the
+  environment by accident, completely different value is loaded and no one
+  is notified about that.
+
+* On error, only the first one error is reported. This requires to re-run
+  the program every time an error is resolved.
 
 ## Usage
 
