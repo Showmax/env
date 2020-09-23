@@ -18,8 +18,16 @@ drawbacks, for example:
   environment by accident, completely different value is loaded and no one
   is notified about that.
 
+* The name lookup is case insensitive which in general feels to magical and
+  can again lead to errors by accident.
+
 * On error, only the first one error is reported. This requires to re-run
   the program every time an error is resolved.
+
+We would like to emphasize this piece of text is not aimed to be a rant and
+we do not want to offend any one. We rather want to give reasons why we have
+decided to write the yet another package. We respect that use-case that
+doesn't fit our needs can fit to someone else's needs.
 
 ## Usage
 

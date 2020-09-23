@@ -132,7 +132,7 @@ func (l *loader) loadVar(rv reflect.Value, name string) error {
 	}
 	if rv.Kind() == reflect.Map {
 		if err := l.parseAndSetMap(name, rv); err != nil {
-			return fmt.Errorf("can't parse %s: %w", rv.Type(), err)
+			return fmt.Errorf("cannot parse %s: %w", rv.Type(), err)
 		}
 		return nil
 	}
@@ -229,7 +229,8 @@ func varsPrefixed(pfx string) map[string]string {
 		spl := strings.SplitN(ev, "=", 2)
 		name, value := spl[0], spl[1]
 		if strings.HasPrefix(name, pfx) {
-			vars[name] = value // keys are be unique, as EnvVars are
+			// keys should be unique, as EnvVars are
+			vars[name] = value
 		}
 	}
 	return vars
