@@ -107,7 +107,7 @@ automatically initialize all intermediate pointers on the path.
 
 We also support parsing slices. If a data field is declared as slice, the
 corresponding value parsed from env is treated as comma-separated list of
-values loaded into the slice This behavior is baked-in and is not
+values loaded into the slice. This behavior is baked-in and is not
 configurable.
 
 The following rules apply to the individual slice items:
