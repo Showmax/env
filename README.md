@@ -22,12 +22,18 @@ drawbacks, for example:
   can again lead to errors by accident.
 
 * On error, only the first one error is reported. This requires to re-run
-  the program every time an error is resolved.
+  the program every time an error is resolved. This is also really annoying
+  when deploying something for the first time or e.g. after the names of the
+  variables have been refactored.
 
 We would like to emphasize this piece of text is not aimed to be a rant and
-we do not want to offend any one. We rather want to give reasons why we have
+we do not want to offend anyone. We rather want to give reasons why we have
 decided to write the yet another package. We respect that use-case that
-doesn't fit our needs can fit to someone else's needs.
+doesn't fit our needs can fit someone else's needs.
+
+**It is worth mentioning that `env` does not have any external dependencies
+beside standard library packages.** And aside from
+[testify](https://github.com/stretchr/testify) which is only used in tests.
 
 ## Usage
 
@@ -106,20 +112,23 @@ automatically initialize all intermediate pointers on the path.
 ### Parsing slices
 
 We also support parsing slices. If a data field is declared as slice, the
-corresponding value parsed from env is treated as comma-separated list of
-values loaded into the slice. This behavior is baked-in and is not
+corresponding value parsed from environment is treated as comma-separated
+list of values loaded into the slice. This behavior is baked-in and is not
 configurable.
 
-The following rules apply to the individual slice items:
+The following rules apply to the slice parsing:
 
 * Individual items are parsed recursively using the same rules according to
   their underlying data-type.
-* A slice value cannot contain null-byte.
-* The individual values may be enclosed in double-quotes (useful when an
-  item contains spaces or similar).
-* An empty slice item must be always enclosed in double-quotes.
-* If, for some reason, a double-quote have to be contained in one of the
-  values, it must be prefixed (escaped) by back-slash.
+* The items are separated by comma. If one needs a comma to be present in a
+  slice item, it must be escaped by back-slash, like this: `\,`. The same
+  applies to the back-slash itself: `\\`.
+* A double-quotes are also reserved for special use. All commas and
+  back-slashes inside double quotes are escaped automatically. If one needs
+  a double-quote to be present in a slice item, it must be **always**
+  escaped by back-slash like this: `\"`.
+* All leading and trailing spaces at the item boundaries (before and after
+  comma), are ignored. Spaces inside double-quotes are never ignored.
 
 ### Parsing maps
 
@@ -159,3 +168,17 @@ according to their underlying data-type.
 ## Tests and examples
 
 Please see our tests for more detailed examples.
+
+## Contribution and bug reporting
+
+If you would like to contribute, feel free to open a pull request here, on
+GitHub. If the proposed changes will be reasonable, we will merge them to
+upstream after proper review.
+
+Also, if you would like to discuss anything related to this project, or you
+would like to report a bug, please open a GitHub issue.
+
+## Project status
+
+The project is actively maintained by Showmax s.r.o. As we use the package
+internally, we are concerned in keeping this project up to date.

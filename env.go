@@ -196,18 +196,29 @@ func (l *loader) parseAndSetSlice(s string, rv reflect.Value) error {
 	if esc {
 		return fmt.Errorf("trailing \\")
 	}
+	// Here, none of the fields contain NUL byte, nor stand-alone comma.
 	for i, f := range fields {
 		if len(f) == 0 {
 			return fmt.Errorf("empty fields must be quoted")
 		}
+		// Get rid of leading and trailing spaces of each field.
 		f = strings.TrimSpace(f)
+
+		// Get rid of stand-alone double-quotes and transform the
+		// escaped double-quotes into the real ones.
 		f = strings.ReplaceAll(f, `\"`, "\x00")
 		f = strings.ReplaceAll(f, `"`, "")
 		f = strings.ReplaceAll(f, "\x00", `"`)
+
+		// Get rid of stand-alone back-slashes and transform the
+		// escaped back-slashes into the real ones.
 		f = strings.ReplaceAll(f, `\\`, "\x00")
 		f = strings.ReplaceAll(f, `\`, "")
 		f = strings.ReplaceAll(f, "\x00", `\`)
+
+		// Transform escaped commas into the real ones.
 		f = strings.ReplaceAll(f, `\,`, `,`)
+
 		fields[i] = f
 	}
 
@@ -223,12 +234,12 @@ func (l *loader) parseAndSetSlice(s string, rv reflect.Value) error {
 	return nil
 }
 
-func varsPrefixed(pfx string) map[string]string {
+func varsPrefixed(prefix string) map[string]string {
 	vars := make(map[string]string)
 	for _, ev := range os.Environ() {
 		spl := strings.SplitN(ev, "=", 2)
 		name, value := spl[0], spl[1]
-		if strings.HasPrefix(name, pfx) {
+		if strings.HasPrefix(name, prefix) {
 			// keys should be unique, as EnvVars are
 			vars[name] = value
 		}
@@ -322,9 +333,6 @@ func parseBool(s string) (interface{}, error) {
 
 func parseFloat32(s string) (interface{}, error) {
 	val, err := strconv.ParseFloat(s, 32)
-	if err != nil {
-		return nil, err
-	}
 	return float32(val), err
 }
 
@@ -338,57 +346,36 @@ func parseInt(s string) (interface{}, error) {
 
 func parseUint(s string) (interface{}, error) {
 	val, err := strconv.ParseUint(s, 10, strconv.IntSize)
-	if err != nil {
-		return nil, err
-	}
 	return uint(val), err
 }
 
 func parseInt8(s string) (interface{}, error) {
 	val, err := strconv.ParseInt(s, 10, 8)
-	if err != nil {
-		return nil, err
-	}
 	return int8(val), err
 }
 
 func parseUint8(s string) (interface{}, error) {
 	val, err := strconv.ParseUint(s, 10, 8)
-	if err != nil {
-		return nil, err
-	}
 	return uint8(val), err
 }
 
 func parseInt16(s string) (interface{}, error) {
 	val, err := strconv.ParseInt(s, 10, 16)
-	if err != nil {
-		return nil, err
-	}
 	return int16(val), err
 }
 
 func parseUint16(s string) (interface{}, error) {
 	val, err := strconv.ParseUint(s, 10, 16)
-	if err != nil {
-		return nil, err
-	}
 	return uint16(val), err
 }
 
 func parseInt32(s string) (interface{}, error) {
 	val, err := strconv.ParseInt(s, 10, 32)
-	if err != nil {
-		return nil, err
-	}
 	return int32(val), err
 }
 
 func parseUint32(s string) (interface{}, error) {
 	val, err := strconv.ParseUint(s, 10, 32)
-	if err != nil {
-		return nil, err
-	}
 	return uint32(val), err
 }
 
