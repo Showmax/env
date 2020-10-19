@@ -32,7 +32,7 @@ decided to write the yet another package. We respect that use-case that
 doesn't fit our needs can fit someone else's needs.
 
 **It is worth mentioning that `env` does not have any external dependencies
-beside standard library packages.** And aside from
+beside standard library packages.** Aside from
 [testify](https://github.com/stretchr/testify) which is only used in tests.
 
 ## Usage
@@ -68,9 +68,31 @@ As you can see, even structure embedding and composition is supported so you
 can define arbitrarily complex structure. The naming scheme follows the
 nesting, so for example the env variable corresponding to `Bar` string field
 inside `Bar` struct will have name `BAR_BAR` (besides the global prefix, see
-below).
+below). Nothing magical happens anywhere, e.g. the `_` separator is not
+inserted automatically. Notice the `BAR_` prefix on `config.Bar`; without
+the `_`, `BAR_BAR` would be `BARBAR`.
 
-The configuration can be then parsed and loaded like this:
+Similarly, no value will ever be loaded from a field which isn't env-tagged.
+However all struct data members (including the embedded ones) must be
+exported to be recognized by `env`.
+
+Embedded structs are traversed automatically (with no prefix, i.e. the
+annotation is optional) to search for env-tagged fields. This is useful for
+embedding of common configuration options.
+
+Obviously the type of fields need not be defined types, i.e. it's possible
+to write:
+
+```
+struct Foo {
+    Bar struct {
+        I int `env:"I"`
+        J int `env:"J"`
+    } `env:"BAR_"`
+}
+```
+
+Finally, the configuration can be parsed and loaded like this:
 
 ```
 package main
@@ -85,7 +107,7 @@ func main() {
 
 All env variable names must be prefixed by `PREFIX_` in this example so the
 final variable name will not be `BAR_BAR` but `PREFIX_BAR_BAR`. Empty prefix
-is also allowed.
+is also allowed here.
 
 ## Parsers
 
@@ -93,9 +115,10 @@ The actual parsing is driven by data-type of particular fields in the config
 structure. Based on the data-type, concrete parser is chosen. The parser
 look-up procedure goes as follows:
 
-1. Default parser map is examined (see default parsers for extensive list).
-   This map contains parsers for all primitive data types and also for some
-   simple types from go base library (such as `time.Duration` or `url.URL`).
+1. Default parser map is examined (see [default
+   parsers](#list-of-default-parsers) for extensive list).  This map contains
+   parsers for all primitive data types and also for some simple types from
+   go base library (such as `time.Duration` or `url.URL`).
 2. If the corresponding parser is not found in the default parsers map, we
    try to cast the type to `TextUnmarshaller` interface and use it for
    parsing the value.
@@ -107,11 +130,13 @@ provide built-in support. See below.
 
 When the value is a pointer (potentially a pointer to pointer, or pointer to
 pointer to another pointer, etc.), we follow the pointer chain and
-automatically initialize all intermediate pointers on the path.
+automatically initialize all intermediate pointers on the path. In this
+respect, `env` behaves the same as the `json` package in the standard
+library.
 
 ### Parsing slices
 
-We also support parsing slices. If a data field is declared as slice, the
+We also support parsing slices. If a struct field is declared as slice, the
 corresponding value parsed from environment is treated as comma-separated
 list of values loaded into the slice. This behavior is baked-in and is not
 configurable.
@@ -164,6 +189,31 @@ map[int]string{
 
 Individual map elements (both keys and values) are parsed recursively
 according to their underlying data-type.
+
+### List of default parsers
+
+For these data-types, the parsing behavior is built-in (mostly using parsing
+functions from standard library) and preferred over text unmarshaller:
+
+- `Bool`
+- `Float32`
+- `Float64`
+- `Int`
+- `Uint`
+- `Int8`
+- `Uint8`
+- `Int16`
+- `Uint16`
+- `Int32`
+- `Uint32`
+- `Int64`
+- `Uint64`
+- `String`
+- `Regex`
+- `Duration`
+- `URL`
+- `TextTemplate`
+
 
 ## Tests and examples
 
