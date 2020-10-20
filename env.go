@@ -42,7 +42,7 @@ func (e *loadError) Error() string {
 }
 
 // Load will load configuration from environment to dst, which must be a struct
-// or a struct pointer, using the default loader.
+// or a struct pointer.
 func Load(dst interface{}, prefix string) error {
 	return newLoader().Load(dst, prefix)
 }
