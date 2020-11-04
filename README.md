@@ -1,4 +1,5 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/Showmax/env)](https://goreportcard.com/report/github.com/Showmax/env)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/Showmax/env)](https://pkg.go.dev/github.com/Showmax/env)
 
 # env
 `env` is yet another package for parsing various data types from environment
