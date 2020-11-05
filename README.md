@@ -153,11 +153,13 @@ The following rules apply to the slice parsing:
   their underlying data-type.
 * The items are separated by comma. If one needs a comma to be present in a
   slice item, it must be escaped by back-slash, like this: `\,`. The same
-  applies to the back-slash itself: `\\`.
-* A double-quotes are also reserved for special use. All commas and
-  back-slashes inside double quotes are escaped automatically. If one needs
-  a double-quote to be present in a slice item, it must be **always**
-  escaped by back-slash like this: `\"`.
+  applies to the back-slash itself: `\\`. Generally, all characters prefixed
+  by back-slash are expanded to the respective character after the
+  back-slash.
+* A double-quotes are also reserved for special use. All commas inside
+  double quotes are escaped automatically. If one needs a double-quote to be
+  present in a slice item, it must be **always** escaped by back-slash like
+  this: `\"`.
 * All leading and trailing spaces at the item boundaries (before and after
   comma) are ignored. Spaces inside double-quotes are never ignored.
 
