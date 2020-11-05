@@ -4,8 +4,9 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # env
+
 `env` is yet another package for parsing various data types from environment
-variables. We decided to write this package as none of the avalaible
+variables. We decided to write this package as none of the available
 packages met our needs. The closest one was
 [envconfig](https://github.com/kelseyhightower/envconfig) but it has several
 drawbacks, for example:
@@ -78,7 +79,7 @@ inserted automatically. Notice the `BAR_` prefix on `config.Bar`; without
 the `_`, `BAR_BAR` would be `BARBAR`.
 
 Similarly, no value will ever be loaded from a field which isn't env-tagged.
-However all struct data members (including the embedded ones) must be
+However, all struct data members (including the embedded ones) must be
 exported to be recognized by `env`.
 
 Embedded structs are traversed automatically (with no prefix, i.e. the
@@ -125,7 +126,7 @@ look-up procedure goes as follows:
    parsers for all primitive data types and also for some simple types from
    go base library (such as `time.Duration` or `url.URL`).
 2. If the corresponding parser is not found in the default parsers map, we
-   try to cast the type to `TextUnmarshaller` interface and use it for
+   check if the type implements TextUnmarshaller interface and we use it for
    parsing the value.
 
 For internal go composite types (such as pointers, slices or maps), we
@@ -158,7 +159,7 @@ The following rules apply to the slice parsing:
   a double-quote to be present in a slice item, it must be **always**
   escaped by back-slash like this: `\"`.
 * All leading and trailing spaces at the item boundaries (before and after
-  comma), are ignored. Spaces inside double-quotes are never ignored.
+  comma) are ignored. Spaces inside double-quotes are never ignored.
 
 ### Parsing maps
 
