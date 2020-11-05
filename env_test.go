@@ -182,6 +182,7 @@ func TestSlice(t *testing.T) {
 			`aa`,
 		},
 		`\?`: {`?`},
+		`"foo\\"`: {`foo\`},
 	}
 	type cfg struct {
 		Slice []string `env:"SLICE"`

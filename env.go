@@ -204,15 +204,14 @@ func (l *loader) parseAndSetSlice(s string, rv reflect.Value) error {
 		// Get rid of leading and trailing spaces of each field.
 		f = strings.TrimSpace(f)
 
-		// Get rid of stand-alone double-quotes and transform the
-		// escaped double-quotes into the real ones.
-		f = strings.ReplaceAll(f, `\"`, "\x00")
-		f = strings.ReplaceAll(f, `"`, "")
-		f = strings.ReplaceAll(f, "\x00", `"`)
-
-		// Get rid of stand-alone back-slashes and transform the
-		// escaped back-slashes into the real ones.
+		// 1) Get rid of stand-alone double-quotes and transform the
+		//    escaped double-quotes into the real ones.
+		// 2) Get rid of stand-alone back-slashes and transform the
+		//    escaped back-slashes into the real ones.
 		f = strings.ReplaceAll(f, `\\`, "\x00")
+		f = strings.ReplaceAll(f, `\"`, " \x00\x00 ")
+		f = strings.ReplaceAll(f, `"`, "")
+		f = strings.ReplaceAll(f, " \x00\x00 ", `"`)
 		f = strings.ReplaceAll(f, `\`, "")
 		f = strings.ReplaceAll(f, "\x00", `\`)
 
