@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/Showmax/env.svg?branch=master)](https://travis-ci.org/Showmax/env)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Showmax/env)](https://goreportcard.com/report/github.com/Showmax/env)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/Showmax/env)](https://pkg.go.dev/github.com/Showmax/env)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # env
 `env` is yet another package for parsing various data types from environment
