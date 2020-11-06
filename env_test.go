@@ -181,10 +181,11 @@ func TestSlice(t *testing.T) {
 			`fo"o,o`,
 			`aa`,
 		},
-		`\?`:      {`?`},
-		`"foo\\"`: {`foo\`},
-		`  "" ,`:  {``},
-		`  " " ,`: {` `},
+		`\?`:           {`?`},
+		`"foo\\"`:      {`foo\`},
+		`foo \\\\ bar`: {`foo \\ bar`},
+		`  "" ,`:       {``},
+		`  " " ,`:      {` `},
 	}
 	type cfg struct {
 		Slice []string `env:"SLICE"`
