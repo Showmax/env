@@ -165,14 +165,18 @@ func (l *loader) parseAndSetValue(s string, rv reflect.Value) error {
 	return fmt.Errorf("parsing of %v not supported", rt)
 }
 
-// parseAndSetSlice parses a comma-separated list of values as a slice.
-func (l *loader) parseAndSetSlice(s string, rv reflect.Value) error {
+func tokenizeSliceString(s string) ([]string, error) {
 	var q, esc bool
 	var sb strings.Builder
 	var fields []string
 	for _, r := range s {
 		if r == ',' && !esc && !q {
-			fields = append(fields, sb.String())
+			str := sb.String()
+			if len(str) == 0 {
+				msg := "empty fields must be quoted"
+				return nil, fmt.Errorf(msg)
+			}
+			fields = append(fields, str)
 			sb.Reset()
 		} else {
 			sb.WriteRune(r)
@@ -181,7 +185,7 @@ func (l *loader) parseAndSetSlice(s string, rv reflect.Value) error {
 			} else if r == '\\' && !esc {
 				esc = true
 			} else if r == '\x00' {
-				return fmt.Errorf("NUL byte in input")
+				return nil, fmt.Errorf("NUL byte in input")
 			} else {
 				esc = false
 			}
@@ -191,37 +195,49 @@ func (l *loader) parseAndSetSlice(s string, rv reflect.Value) error {
 		fields = append(fields, sb.String())
 	}
 	if q {
-		return fmt.Errorf("unbalanced quotes")
+		return nil, fmt.Errorf("unbalanced quotes")
 	}
 	if esc {
-		return fmt.Errorf("trailing \\")
+		return nil, fmt.Errorf("trailing \\")
 	}
-	// Here, none of the fields contain NUL byte, nor stand-alone comma.
-	for i, f := range fields {
-		if len(f) == 0 {
-			return fmt.Errorf("empty fields must be quoted")
+	return fields, nil
+}
+
+func unescapeSliceField(f string) string {
+	runes := []rune(f)
+	end := len(runes) - 1
+	for ; end >= 0; end-- {
+		if unicode.IsSpace(runes[end]) {
+			continue
+		} else if runes[end] == '\\' {
+			end++
 		}
-		// Get rid of leading and trailing spaces of each field.
-		f = strings.TrimSpace(f)
-
-		// 1) Get rid of stand-alone double-quotes and transform the
-		//    escaped double-quotes into the real ones.
-		// 2) Get rid of stand-alone back-slashes and transform the
-		//    escaped back-slashes into the real ones.
-		f = strings.ReplaceAll(f, `\\`, "\x00")
-		f = strings.ReplaceAll(f, `\"`, " \x00\x00 ")
-		f = strings.ReplaceAll(f, `"`, "")
-		f = strings.ReplaceAll(f, " \x00\x00 ", `"`)
-		f = strings.ReplaceAll(f, `\`, "")
-		f = strings.ReplaceAll(f, "\x00", `\`)
-
-		// Transform escaped commas into the real ones.
-		f = strings.ReplaceAll(f, `\,`, `,`)
-
-		fields[i] = f
+		break
 	}
+	start := 0
+	for ; start < len(runes) && unicode.IsSpace(runes[start]); start++ {
+	}
+	var sb strings.Builder
+	for i := start; i <= end; i++ {
+		if runes[i] == '\\' {
+			i++
+			sb.WriteRune(runes[i])
+		} else if runes[i] != '"' {
+			sb.WriteRune(runes[i])
+		}
+	}
+	return sb.String()
+}
 
-	// Set slice values. Skip last field.
+// parseAndSetSlice parses a comma-separated list of values as a slice.
+func (l *loader) parseAndSetSlice(s string, rv reflect.Value) error {
+	fields, err := tokenizeSliceString(s)
+	if err != nil {
+		return err
+	}
+	for i, f := range fields {
+		fields[i] = unescapeSliceField(f)
+	}
 	nfield := len(fields)
 	sl := reflect.MakeSlice(rv.Type(), nfield, nfield)
 	for i, s := range fields {
