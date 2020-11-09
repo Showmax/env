@@ -156,12 +156,13 @@ The following rules apply to the slice parsing:
   applies to the back-slash itself: `\\`. Generally, all characters prefixed
   by back-slash are expanded to the respective character after the
   back-slash.
-* A double-quotes are also reserved for special use. All commas inside
-  double quotes are escaped automatically. If one needs a double-quote to be
-  present in a slice item, it must be **always** escaped by back-slash like
-  this: `\"`.
+* Double-quotes are also reserved for special use. Commas in double-quoted
+  fields have no special meaning. If one needs a double-quote to be present
+  in a slice item, it must be **always** escaped by back-slash like this:
+  `\"`.
 * All leading and trailing spaces at the item boundaries (before and after
-  comma) are ignored. Spaces inside double-quotes are never ignored.
+  comma and also at the beginning and the end of the string) are ignored.
+  Spaces inside double-quotes are never ignored.
 
 ### Parsing maps
 
