@@ -205,6 +205,8 @@ func tokenizeSliceString(s string) ([]string, error) {
 
 func unescapeSliceField(f string) string {
 	runes := []rune(f)
+
+	// Trim trailing spaces (find end of the string).
 	end := len(runes) - 1
 	for ; end >= 0; end-- {
 		if unicode.IsSpace(runes[end]) {
@@ -214,9 +216,13 @@ func unescapeSliceField(f string) string {
 		}
 		break
 	}
+
+	// Trim leading spaces (find start of the string).
 	start := 0
 	for ; start < len(runes) && unicode.IsSpace(runes[start]); start++ {
 	}
+
+	// Extract and unescape the string.
 	var sb strings.Builder
 	for i := start; i <= end; i++ {
 		if runes[i] == '\\' {
