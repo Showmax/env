@@ -3,6 +3,7 @@ package env
 import (
 	"fmt"
 	"math"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -30,6 +31,8 @@ type config struct {
 	IntSlice    *[]int        `env:"INT_SLICE"`
 	String      string        `env:"STRING"`
 	StringSlice []string      `env:"STRING_SLICE"`
+	URLValue    url.URL       `env:"URL_VALUE"`
+	URLPtr      *url.URL      `env:"URL_PTR"`
 	badConfig   int           //nolint:structcheck,unused
 }
 
@@ -62,6 +65,8 @@ var (
 		"INT_SLICE":    `1,2,"3"`,
 		"STRING":       "STRING",
 		"STRING_SLICE": `"comma separated",values`,
+		"URL_VALUE":    "https://example.org",
+		"URL_PTR":      "https://example.org",
 	}
 	invalidVars = environment{
 		"BOOL":         "flase",
@@ -81,6 +86,8 @@ var (
 		IntSlice:    &[]int{1, 2, 3},
 		String:      "STRING",
 		StringSlice: []string{"comma separated", "values"},
+		URLValue:    url.URL{Scheme: "https", Host: "example.org"},
+		URLPtr:      &url.URL{Scheme: "https", Host: "example.org"},
 	}
 )
 
