@@ -47,7 +47,7 @@ The usage is really straightforward. The environment variables are
 identified using go annotations (`env` prefix followed by variable name). So
 you can write your configuration structure like:
 
-```
+```go
 type config struct {
 	Foo
 	Bar         `env:"BAR_"`
@@ -89,8 +89,8 @@ embedding of common configuration options.
 Obviously the type of fields need not be defined types, i.e. it's possible
 to write:
 
-```
-struct Foo {
+```go
+type Foo struct {
     Bar struct {
         I int `env:"I"`
         J int `env:"J"`
@@ -100,10 +100,10 @@ struct Foo {
 
 Finally, the configuration can be parsed and loaded like this:
 
-```
+```go
 package main
 
-import github.com/Showmax/env
+import "github.com/Showmax/env"
 
 func main() {
 	var cfg config
@@ -170,7 +170,7 @@ Maps are treated in a special way. Map keys are bound to a suffix of the
 environment variable name. Let's describe it by an example - suppose the
 following code:
 
-```
+```go
 type config struct {
 	Map map[int]string `env:"MAP_"`
 }
@@ -189,7 +189,7 @@ $> export PREFIX_MAP_42=foo PREFIX_MAP_84=bar
 
 This will produce the following map:
 
-```
+```go
 map[int]string{
 	42: "foo",
 	84: "bar",
