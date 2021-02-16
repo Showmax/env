@@ -328,6 +328,7 @@ func textUnmarshaler(rv reflect.Value) encoding.TextUnmarshaler {
 func defaultParsers() map[reflect.Type]parseFunc {
 	return map[reflect.Type]parseFunc{
 		reflect.TypeOf(bool(false)):      parseBool,
+		reflect.TypeOf(os.FileMode(0)):   parseFileMode,
 		reflect.TypeOf(float32(0)):       parseFloat32,
 		reflect.TypeOf(float64(0)):       parseFloat64,
 		reflect.TypeOf(int(0)):           parseInt,
@@ -351,6 +352,14 @@ func defaultParsers() map[reflect.Type]parseFunc {
 
 func parseBool(s string) (interface{}, error) {
 	return strconv.ParseBool(s)
+}
+
+func parseFileMode(s string) (interface{}, error) {
+	num, err := parseUint32(s)
+	if err != nil {
+		return nil, err
+	}
+	return os.FileMode(num), nil
 }
 
 func parseFloat32(s string) (interface{}, error) {
