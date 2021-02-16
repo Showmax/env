@@ -554,3 +554,26 @@ func TestMapDurations(t *testing.T) {
 		}
 	}
 }
+
+func TestFileMode(t *testing.T) {
+	a := assert.New(t)
+
+	samples := []uint32{
+		0644,
+		7777,
+	}
+
+	type cfg struct {
+		Mode os.FileMode `env:"FILE_MODE"`
+	}
+	for _, ref := range samples {
+		os.Setenv("FILE_MODE", fmt.Sprint(ref))
+		var c cfg
+
+		err := Load(&c, "")
+		a.NoError(err)
+		a.Equal(os.FileMode(ref), c.Mode)
+
+		os.Unsetenv("FILE_MODE")
+	}
+}
