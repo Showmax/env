@@ -359,7 +359,7 @@ func parseFileMode(s string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return os.FileMode(num), nil
+	return os.FileMode(num.(uint32)), nil
 }
 
 func parseFloat32(s string) (interface{}, error) {
