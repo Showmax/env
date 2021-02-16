@@ -355,11 +355,14 @@ func parseBool(s string) (interface{}, error) {
 }
 
 func parseFileMode(s string) (interface{}, error) {
-	num, err := parseUint32(s)
+	if s[0] != '0' {
+		return nil, fmt.Errorf("file mode must be prefixed with 0")
+	}
+	val, err := strconv.ParseUint(s, 8, 32)
 	if err != nil {
 		return nil, err
 	}
-	return os.FileMode(num.(uint32)), nil
+	return os.FileMode(val), nil
 }
 
 func parseFloat32(s string) (interface{}, error) {
