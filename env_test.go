@@ -5,9 +5,11 @@ import (
 	"math"
 	"net/url"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"testing"
+	tt "text/template"
 	"time"
 
 	"github.com/stretchr/testify/assert"
@@ -33,6 +35,8 @@ type config struct {
 	StringSlice []string      `env:"STRING_SLICE"`
 	URLValue    url.URL       `env:"URL_VALUE"`
 	URLPtr      *url.URL      `env:"URL_PTR"`
+	Regexp      regexp.Regexp `env:"REGEXP"`
+	Template    tt.Template   `env:"TEMPLATE"`
 	badConfig   int           //nolint:structcheck,unused
 }
 
@@ -67,6 +71,8 @@ var (
 		"STRING_SLICE": `"comma separated",values`,
 		"URL_VALUE":    "https://example.org",
 		"URL_PTR":      "https://example.org",
+		"REGEXP":       "^[a-c]bbf*d+c*$",
+		"TEMPLATE":     "{{23 -}} < {{- 45}}",
 	}
 	invalidVars = environment{
 		"BOOL":         "flase",
@@ -88,6 +94,14 @@ var (
 		StringSlice: []string{"comma separated", "values"},
 		URLValue:    url.URL{Scheme: "https", Host: "example.org"},
 		URLPtr:      &url.URL{Scheme: "https", Host: "example.org"},
+		Regexp:      *regexp.MustCompile("^[a-c]bbf*d+c*$"),
+		Template: func() tt.Template {
+			t, err := tt.New("from_env").Parse("{{23 -}} < {{- 45}}")
+			if err != nil {
+				panic(err.Error())
+			}
+			return *t
+		}(),
 	}
 )
 
