@@ -342,11 +342,10 @@ func defaultParsers() map[reflect.Type]parseFunc {
 		reflect.TypeOf(int64(0)):         parseInt64,
 		reflect.TypeOf(uint64(0)):        parseUint64,
 		reflect.TypeOf(string("")):       parseString,
-		reflect.TypeOf(&regexp.Regexp{}): parseRegex,
+		reflect.TypeOf(regexp.Regexp{}):  parseRegex,
 		reflect.TypeOf(time.Duration(0)): parseDuration,
 		reflect.TypeOf(url.URL{}):        parseURL,
-		reflect.TypeOf(&url.URL{}):       parseURLPtr,
-		reflect.TypeOf(&tt.Template{}):   parseTextTemplate,
+		reflect.TypeOf(tt.Template{}):    parseTextTemplate,
 	}
 }
 
@@ -426,7 +425,11 @@ func parseString(s string) (interface{}, error) {
 }
 
 func parseRegex(s string) (interface{}, error) {
-	return regexp.Compile(s)
+	r, err := regexp.Compile(s)
+	if err != nil {
+		return nil, err
+	}
+	return *r, nil
 }
 
 func parseDuration(s string) (interface{}, error) {
@@ -442,10 +445,10 @@ func parseURL(s string) (interface{}, error) {
 	return *url, nil
 }
 
-func parseURLPtr(s string) (interface{}, error) {
-	return url.Parse(s)
-}
-
 func parseTextTemplate(s string) (interface{}, error) {
-	return tt.New("from_env").Parse(s)
+	t, err := tt.New("from_env").Parse(s)
+	if err != nil {
+		return nil, err
+	}
+	return *t, nil
 }
