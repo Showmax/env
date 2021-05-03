@@ -354,7 +354,7 @@ func parseBool(s string) (interface{}, error) {
 }
 
 func parseFileMode(s string) (interface{}, error) {
-	if s[0] != '0' {
+	if len(s) > 0 && s[0] != '0' {
 		return nil, fmt.Errorf("file mode must be prefixed with 0")
 	}
 	val, err := strconv.ParseUint(s, 8, 32)
