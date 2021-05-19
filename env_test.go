@@ -1,6 +1,7 @@
 package env
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"net/url"
@@ -567,6 +568,27 @@ func TestMapDurations(t *testing.T) {
 			os.Unsetenv("MAP_" + k.String())
 		}
 	}
+}
+
+type customMap map[string]string
+
+func (m *customMap) UnmarshalText(text []byte) error {
+	return json.Unmarshal(text, (*map[string]string)(m))
+}
+
+func TestMapWithCustomUnmarshaler(t *testing.T) {
+	a := assert.New(t)
+
+	type cfg struct {
+		Map customMap `env:"MAP"`
+	}
+	os.Setenv("MAP", `{"key": "value"}`)
+	defer os.Unsetenv("MAP")
+
+	var c cfg
+	err := Load(&c, "")
+	a.NoError(err)
+	a.Equal(customMap{"key": "value"}, c.Map)
 }
 
 func TestFileMode(t *testing.T) {
