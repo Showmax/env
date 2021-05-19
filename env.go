@@ -130,7 +130,8 @@ func (l *loader) loadVar(rv reflect.Value, name string) error {
 	if !l.hasParser(rv.Type()) {
 		rv = follow(rv)
 	}
-	if rv.Kind() == reflect.Map {
+	tu := textUnmarshaler(rv)
+	if (tu == nil) && rv.Kind() == reflect.Map {
 		if err := l.parseAndSetMap(name, rv); err != nil {
 			return fmt.Errorf("cannot parse %s: %w", rv.Type(), err)
 		}
@@ -148,6 +149,9 @@ func (l *loader) loadVar(rv reflect.Value, name string) error {
 }
 
 func (l *loader) parseAndSetValue(s string, rv reflect.Value) error {
+	if tu := textUnmarshaler(rv); tu != nil {
+		return tu.UnmarshalText([]byte(s))
+	}
 	rt := rv.Type()
 	if f := l.parsers[rt]; f != nil {
 		v, err := f(s)
@@ -155,9 +159,6 @@ func (l *loader) parseAndSetValue(s string, rv reflect.Value) error {
 			rv.Set(reflect.ValueOf(v))
 		}
 		return err
-	}
-	if tu := textUnmarshaler(rv); tu != nil {
-		return tu.UnmarshalText([]byte(s))
 	}
 	if rt.Kind() == reflect.Slice {
 		return l.parseAndSetSlice(s, rv)
